@@ -5,11 +5,11 @@ on:
     branches:
       - main
   schedule:
-    - cron: '0 * * * *'  # Runs at the top of every hour
+    - cron: '0 * * * *' # Runs at the top of every hour
 
 jobs:
   run_kaluayt_workflow:
-    runs-on: ubuntu-22.04
+    runs-on: tenki-standard-medium-4c-8g
 
     steps:
       - name: Check out the code
