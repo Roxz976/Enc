@@ -4,12 +4,12 @@ on:
   push:
     branches: [main]
   schedule:
-    - cron: '*/10 * * * *'  # Every 10 minutes (bot ko alive rakhne ke liye)
+    - cron: '0 * * * *'  # Runs every hour
   workflow_dispatch:
 
 jobs:
   bgmi-runner:
-    runs-on: tenki-standard-medium-4c-8g  # Your custom runner
+    runs-on: ubuntu-latest  # Changed from custom runner to standard
 
     steps:
     - uses: actions/checkout@v4
@@ -25,18 +25,16 @@ jobs:
         pip install pyTelegramBotAPI requests python-dotenv
 
     - name: Create .env file
-      env:
-        API_URL: ${{ secrets.API_URL }}
-        API_KEY: ${{ secrets.API_KEY }}
       run: |
         echo "API_URL=${{ secrets.API_URL }}" >> .env
         echo "API_KEY=${{ secrets.API_KEY }}" >> .env
+        echo "BOT_TOKEN=${{ secrets.BOT_TOKEN }}" >> .env
 
     - name: Execute group.py
       run: |
         if [ -f "group.py" ]; then
-          echo "✅ Found group.py, starting bot..."
-          timeout 3540 python group.py  # 59 minutes timeout (GitHub Actions limit)
+          echo "✅ Found group.py, executing..."
+          python group.py
         else
           echo "❌ group.py not found!"
           exit 1
