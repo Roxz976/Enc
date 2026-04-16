@@ -66,6 +66,6 @@ jobs:
       - name: Run Bot
         run: |
           echo "🤖 Starting bot..."
-          python3 m.py
+          python3 y.py
         env:
           BOT_TOKEN: "8179448288:AAGzOSPYhhGjUiTr2h-UMzbaSPmYnAaUjbY"
