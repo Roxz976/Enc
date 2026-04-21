@@ -1,25 +1,36 @@
-name: Build APK
-on: [push, workflow_dispatch]
+name: Deploy Stress Test Panel
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+# Permission for pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
 
 jobs:
-  build:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    
     runs-on: ubuntu-latest
+    
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-      - uses: android-actions/setup-android@v3
-      
-      - name: Extract and Build
-        run: |
-          unzip -o StressTestApp_Final.zip
-          cd StressTestApp_Final
-          chmod +x gradlew
-          ./gradlew assembleDebug --no-daemon
-      
-      - uses: actions/upload-artifact@v4
-        with:
-          name: StressTestApp-APK
-          path: '**/*.apk'
+    - name: Checkout
+      uses: actions/checkout@v4
+    
+    - name: Setup Pages
+      uses: actions/configure-pages@v4
+    
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: '.'  # Current directory me index.html hoga
+    
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v4
