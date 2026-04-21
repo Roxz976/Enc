@@ -10,7 +10,7 @@ from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, MessageHandler, CallbackContext, CallbackQueryHandler, filters
 
 # ============= CONFIGURATION =============
-TELEGRAM_BOT_TOKEN = '8179448288:AAGzOSPYhhGjUiTr2h-UMzbaSPmYnAaUjbY'
+TELEGRAM_BOT_TOKEN = '8179448288:AAHHevD2bYFOCvw_XdpZiSAWCORrfduT07I'
 ADMIN_USER_ID = 7352008650
 
 # YouTube Channel Settings
