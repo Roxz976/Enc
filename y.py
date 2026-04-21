@@ -620,7 +620,7 @@ async def start(update: Update, context: CallbackContext):
         [InlineKeyboardButton("🎯 SUBSCRIBE NOW 🎯", url=YOUTUBE_CHANNEL_LINK)],
         [InlineKeyboardButton("✅ I HAVE SUBSCRIBED ✅", callback_data="check_sub")],
         [InlineKeyboardButton("📊 CHECK COUNT", callback_data="check_count")],
-        [InlineKeyboardButton("🔗 JOIN COMMUNITY", url="https://t.me/Roxz_gaming")],
+        [InlineKeyboardButton("🔗 JOIN COMMUNITY", url="https://t.me/+tQsKjrJN7785YjJl")],
         [InlineKeyboardButton("📜 ABOUT BOT", callback_data="about")],
         [InlineKeyboardButton("⚔️ ATTACK METHODS", callback_data="methods")],
         [InlineKeyboardButton("📞 SUPPORT", callback_data="support")]
